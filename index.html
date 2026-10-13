@@ -1,0 +1,101 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MemeHunter · Dashboard</title>
+<style>
+:root{--bg:#0b0f17;--card:#121826;--card2:#171f30;--bd:#232c40;--tx:#e6ebf5;--mu:#8a94a8;--g:#22c55e;--r:#ef4444;--a:#7c5cff;--y:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 10% -10%,#1a1440 0,transparent 60%),var(--bg);color:var(--tx);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+a{color:#a5b4fc;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1280px;margin:0 auto;padding:20px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--a),#22d3ee);display:grid;place-items:center;font-weight:800}
+h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 12px;font-weight:600}
+.sp{flex:1}.badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.06em}
+.sim{background:rgba(245,158,11,.12);color:var(--y);border:1px solid rgba(245,158,11,.35)}
+.stat{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:12px}.dot{width:9px;height:9px;border-radius:50%;background:var(--g);box-shadow:0 0 0 4px rgba(34,197,94,.15)}
+.dot.warn{background:var(--y);box-shadow:0 0 0 4px rgba(245,158,11,.15)}.dot.bad{background:var(--r);box-shadow:0 0 0 4px rgba(239,68,68,.15)}
+.btn{background:var(--card2);border:1px solid var(--bd);color:var(--tx);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
+.card{background:linear-gradient(180deg,var(--card),#0f1420);border:1px solid var(--bd);border-radius:14px;padding:16px}
+.k .l{color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.05em}.k .v{font-size:24px;font-weight:700;margin:6px 0 2px}.k .s{color:var(--mu);font-size:12px}
+.g{color:var(--g)}.r{color:var(--r)}.mu{color:var(--mu)}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:14px}@media(max-width:900px){.row{grid-template-columns:1fr}}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th{color:var(--mu);font-weight:500;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid #1b2334;vertical-align:top;white-space:nowrap}tr:hover td{background:rgba(124,92,255,.05)}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.pg{background:rgba(34,197,94,.12);color:var(--g)}.pr{background:rgba(239,68,68,.12);color:var(--r)}.pn{background:#1f2738;color:var(--mu)}.pa{background:rgba(124,92,255,.15);color:#b5a6ff}
+.chip{display:inline-flex;gap:5px;align-items:center;margin:2px 4px 2px 0;padding:3px 8px;border-radius:7px;font-size:11px;border:1px solid var(--bd);background:var(--card2);cursor:help}
+.chip.y{border-color:rgba(34,197,94,.4)}.chip.n{border-color:rgba(239,68,68,.35)}.chip b{font-weight:700}.chip.y b{color:var(--g)}.chip.n b{color:var(--r)}
+.empty{color:var(--mu);padding:14px 4px}.sec{margin-bottom:14px}
+svg text{fill:var(--mu);font-size:11px}
+.bar{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:12px}.bar i{display:block;height:7px;border-radius:4px;background:linear-gradient(90deg,var(--a),#22d3ee)}.bar span{width:150px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lc{width:100%;max-width:380px;text-align:center;padding:32px}.lc .logo{margin:0 auto 14px;width:52px;height:52px;font-size:22px}
+.lc input[type=password]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--bd);background:#0b111c;color:var(--tx);font-size:15px;margin:18px 0 10px;outline:none}.lc input:focus{border-color:var(--a)}
+.lc .go{width:100%;padding:12px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--a),#5b8cff);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.lc label{display:flex;gap:8px;justify-content:center;color:var(--mu);font-size:12px;margin:12px 0 0}.err{color:var(--r);min-height:18px;margin-top:10px;font-size:13px}
+@media(max-width:600px){.wrap{padding:12px}.k .v{font-size:20px}.bar span{width:100px}}
+</style></head><body>
+<div id="login"><div class="card lc"><div class="logo">M</div><h1>MemeHunter</h1><div class="mu" style="margin-top:4px">Panel privado · datos cifrados</div>
+<input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password"><button class="go" id="go">Entrar</button>
+<label><input type="checkbox" id="rem" checked> Recordar en este navegador</label><div class="err" id="err"></div></div></div>
+<div id="app" style="display:none"><div class="wrap">
+<header><div class="logo">M</div><div><h1>MemeHunter</h1><div class="mu" style="font-size:12px">Scalping de memecoins · Solana</div></div><span class="badge sim">SIMULACIÓN</span><span id="run"></span><div class="sp"></div>
+<div class="stat"><span class="dot" id="dot"></span><span id="age">—</span></div><button class="btn" id="out">Salir</button></header>
+<div class="grid" id="kpis"></div>
+<div class="row"><div class="card"><h2>Curva de capital (€)</h2><svg id="chart" viewBox="0 0 1000 240" width="100%" preserveAspectRatio="none" style="height:240px"></svg></div>
+<div class="card"><h2>Motivos de descarte</h2><div id="rejstats"></div></div></div>
+<div class="card sec"><h2>Posiciones abiertas</h2><div class="tw" id="open"></div></div>
+<div class="card sec"><h2>Comité · candidatos y votos</h2><div class="tw" id="cands"></div></div>
+<div class="card sec"><h2>Historial de operaciones</h2><div class="tw" id="closed"></div></div>
+<div class="card sec"><h2>Últimos descartes del filtro</h2><div class="tw" id="rejs"></div></div>
+<div class="mu" style="font-size:12px;text-align:center;padding:10px" id="upd"></div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const f=(n,d=2)=>(n==null||isNaN(n))?'—':Number(n).toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+const px=n=>n==null?'—':(n<0.01?Number(n).toPrecision(4):f(n,4));
+const t=s=>s?new Date(s*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}):'—';
+const sg=n=>n>0?'+':'';const pc=n=>n>0?'pg':n<0?'pr':'pn';
+const pnlb=(txt,n)=>`<span class="pill ${pc(n)}">${txt}</span>`;
+const ds=(tok,s)=>`<a href="https://dexscreener.com/solana/${esc(tok)}" target="_blank" rel="noopener"><b>${esc(s)}</b></a>`;
+const st={pending:['⏳ votando','pa'],approved:['✅ aprobado','pg'],rejected:['❌ rechazado','pr'],expired:['⌛ caducado','pn'],approved_skipped:['⚠️ sin hueco','pn']};
+function tbl(h,rows){return rows.length?`<table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<div class="empty">Nada todavía.</div>'}
+const SRC=['https://api.github.com/repos/Borja123431/memehunter-dashboard/contents/data.enc.json?ref=data','https://raw.githubusercontent.com/Borja123431/memehunter-dashboard/data/data.enc.json'];
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));let PW=localStorage.getItem('mh_pw')||'',KC={},lastTs=0;
+async function getEnc(){for(const [i,u] of SRC.entries()){try{const r=await fetch(u+(u.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store',headers:i==0?{Accept:'application/vnd.github.raw'}:{}});if(r.ok)return await r.json()}catch(e){}}throw new Error('sin datos')}
+async function decrypt(o,pw){const k=o.salt+o.iter;if(!KC[k]){const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);KC[k]=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(o.salt),iterations:o.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}
+ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(o.iv)},KC[k],b64(o.ct))))}
+function chart(d){const q=d.equity||[];const el=$('chart');if(q.length<2){el.innerHTML='<text x=500 y=120 text-anchor=middle>Sin datos suficientes</text>';return}
+ const v=q.map(x=>x.equity_sol*x.sol_eur),lo=Math.min(...v,d.start_eur),hi=Math.max(...v,d.start_eur),pad=(hi-lo)*0.15||1,mn=lo-pad,mx=hi+pad,t0=q[0].ts,t1=q[q.length-1].ts;
+ const L=48,W=1000-L-8,H=210,X=ts=>L+(ts-t0)/(t1-t0||1)*W,Y=y=>10+H-(y-mn)/(mx-mn)*H;
+ const up=v[v.length-1]>=d.start_eur,c=up?'#22c55e':'#ef4444',pts=q.map((x,i)=>X(x.ts).toFixed(1)+','+Y(v[i]).toFixed(1)).join(' ');
+ let g='';for(let i=0;i<=4;i++){const y=mn+(mx-mn)*i/4;g+=`<line x1=${L} x2=1000 y1=${Y(y)} y2=${Y(y)} stroke="#1c2436"/><text x=0 y=${Y(y)+4}>${f(y)}</text>`}
+ for(let i=0;i<=4;i++){const ts=t0+(t1-t0)*i/4;g+=`<text x=${X(ts)} y=236 text-anchor=${i==0?'start':i==4?'end':'middle'}>${t(ts)}</text>`}
+ el.innerHTML=`<defs><linearGradient id=ga x1=0 x2=0 y1=0 y2=1><stop offset=0 stop-color="${c}" stop-opacity=.35 /><stop offset=1 stop-color="${c}" stop-opacity=0 /></linearGradient></defs>${g}
+ <line x1=${L} x2=1000 y1=${Y(d.start_eur)} y2=${Y(d.start_eur)} stroke="#8a94a8" stroke-dasharray="5 5" opacity=.6 />
+ <polygon fill="url(#ga)" points="${X(t0)},${10+H} ${pts} ${X(t1)},${10+H}"/><polyline fill=none stroke="${c}" stroke-width=2.2 stroke-linejoin=round points="${pts}"/>
+ <circle cx=${X(t1)} cy=${Y(v[v.length-1])} r=4 fill="${c}"/>`}
+function age(){if(!lastTs)return;const a=Date.now()/1000-lastTs,m=a/60;$('age').textContent='Datos de hace '+(a<90?Math.round(a)+' s':Math.round(m)+' min');$('dot').className='dot'+(m>10?' bad':m>4?' warn':'')}
+async function load(){
+ const d=await decrypt(await getEnc(),PW);lastTs=d.now;const e=d.sol_eur,s=d.stats;
+ const eqE=d.equity_sol*e,pnl=eqE-d.start_eur,pp=pnl/d.start_eur*100,wr=s.trades?s.wins/s.trades*100:null;
+ $('run').innerHTML=d.halted?'<span class="badge" style="background:rgba(239,68,68,.12);color:var(--r)">PAUSADO</span>':'<span class="badge" style="background:rgba(34,197,94,.12);color:var(--g)">ACTIVO</span>';
+ $('kpis').innerHTML=[['Capital',f(eqE)+' €',`${f(d.equity_sol,4)} SOL · SOL ${f(e)} €`],
+  ['P&L total',`<span class="${pnl>=0?'g':'r'}">${sg(pnl)}${f(pnl)} €</span>`,`${sg(pp)}${f(pp,1)}% sobre ${f(d.start_eur,0)} €`],
+  ['Tasa de acierto',wr==null?'—':f(wr,0)+'%',`${s.wins} ganadoras de ${s.trades}`],
+  ['Operaciones',s.trades,`P&L ops ${sg(s.pnl_sol)}${f(s.pnl_sol*e)} € · comis. ${f(s.fees_sol*e)} €`],
+  ['Posiciones abiertas',`${d.open.length}<span class="mu" style="font-size:15px"> / ${d.cfg?.max_open??'—'}</span>`,`Efectivo ${f(d.cash_sol*e)} €`],
+  ['Candidatos 24h',s.cand_24h,`${s.watching} pools vigilados`]]
+ .map(k=>`<div class="card k"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
+ chart(d);
+ $('open').innerHTML=tbl(['Token','Apertura','Entrada $','Actual $','Stop $','Próx. TP $','Invertido','Restante','P&L','Tramos'],d.open.map(p=>[ds(p.token,p.symbol),t(p.opened),px(p.entry_px),px(p.last_px),px(p.stop_px),px(p.tp_next),f(p.cost_sol*e)+' €',f(p.qty_left/p.qty*100,0)+'%',pnlb(sg(p.pnl_pct)+f(p.pnl_pct,1)+'%',p.pnl_pct),(p.tp1_done?'<span class="pill pg">TP1</span> ':'')+(p.tp2_done?'<span class="pill pg">TP2</span>':'')||'<span class="mu">—</span>']));
+ $('closed').innerHTML=tbl(['Token','Apertura','Cierre','Duración','Entrada $','Invertido','Recuperado','P&L','Motivo'],d.closed.map(p=>[ds(p.token,p.symbol),t(p.opened),t(p.closed),f((p.closed-p.opened)/60,1)+' min',px(p.entry_px),f(p.cost_sol*e)+' €',f(p.proceeds_sol*e)+' €',pnlb(`${sg(p.pnl_sol)}${f(p.pnl_sol*e)} € · ${sg(p.pnl_pct)}${f(p.pnl_pct,1)}%`,p.pnl_sol),`<span class="mu">${esc(p.exit_reason)}</span>`]));
+ $('cands').innerHTML=tbl(['Hora','Token','MCap','Liquidez','Estado','Jueces'],d.candidates.map(c=>{const x=st[c.status]||[c.status,'pn'];return[t(c.ts),ds(c.token,c.symbol),'$'+f(c.mcap,0),'$'+f(c.liq,0),`<span class="pill ${x[1]}">${x[0]}${c.status!='pending'?` ${c.yes}/${c.yes+c.no}`:''}</span>`,
+  (c.votes||[]).map(v=>`<span class="chip ${v.vote=='yes'?'y':'n'}" title="${esc(v.judge)} (${esc(v.source)}): ${esc(v.reason)}">${esc(v.judge)} <b>${v.vote=='yes'?'SÍ':'NO'}</b></span>`).join('')||'<span class="mu">esperando votos…</span>']}));
+ const mxr=Math.max(1,...d.rej_stats.map(r=>r.n));
+ $('rejstats').innerHTML=d.rej_stats.length?d.rej_stats.map(r=>`<div class="bar"><span title="${esc(r.r)}">${esc(r.r)}</span><i style="width:${Math.max(4,r.n/mxr*100*0.6)}%"></i><b>${r.n}</b></div>`).join(''):'<div class="empty">Nada todavía.</div>';
+ $('rejs').innerHTML=tbl(['Hora','Token','MCap','Motivo'],d.rejections.slice(0,50).map(r=>[t(r.ts),ds(r.token,r.symbol||'?'),'$'+f(r.mcap,0),`<span class="mu">${esc(r.reason)}</span>`]));
+ $('upd').textContent='Comprobado a las '+new Date().toLocaleTimeString('es-ES')+' · se refresca cada 75 s · retraso típico 1–2 min';age();
+}
+let timer;async function start(){try{await load();$('login').style.display='none';$('app').style.display='block';if($('rem').checked)localStorage.setItem('mh_pw',PW);if(!timer){timer=setInterval(()=>load().catch(e=>$('upd').textContent='Error al refrescar: '+e.message),75000);setInterval(age,5000)}}catch(e){$('err').textContent=e.name=='OperationError'?'Contraseña incorrecta':'Error: '+e.message;localStorage.removeItem('mh_pw')}}
+$('go').onclick=()=>{PW=$('pw').value;KC={};start()};$('pw').onkeydown=e=>{if(e.key=='Enter')$('go').click()};$('out').onclick=()=>{localStorage.removeItem('mh_pw');location.reload()};if(PW)start();
+</script></body></html>
