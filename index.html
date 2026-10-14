@@ -22,6 +22,7 @@ td{padding:9px 10px;border-bottom:1px solid #1b2334;vertical-align:top;white-spa
 .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
 .pg{background:rgba(34,197,94,.12);color:var(--g)}.pr{background:rgba(239,68,68,.12);color:var(--r)}.pn{background:#1f2738;color:var(--mu)}.pa{background:rgba(124,92,255,.15);color:#b5a6ff}
 .chip{display:inline-flex;gap:5px;align-items:center;margin:2px 4px 2px 0;padding:3px 8px;border-radius:7px;font-size:11px;border:1px solid var(--bd);background:var(--card2);cursor:help}
+.src{display:inline-block;padding:1px 6px;border-radius:5px;font-size:10px;font-weight:700;margin-right:3px}.src.ai{background:rgba(139,92,246,.18);color:#a78bfa;border:1px solid rgba(139,92,246,.45)}.src.sc{background:rgba(148,163,184,.15);color:#94a3b8;border:1px solid rgba(148,163,184,.4)}.src.mx{background:rgba(234,179,8,.15);color:#eab308;border:1px solid rgba(234,179,8,.45)}
 .chip.y{border-color:rgba(34,197,94,.4)}.chip.n{border-color:rgba(239,68,68,.35)}.chip b{font-weight:700}.chip.y b{color:var(--g)}.chip.n b{color:var(--r)}
 .empty{color:var(--mu);padding:14px 4px}.sec{margin-bottom:14px}
 svg text{fill:var(--mu);font-size:11px}
@@ -43,7 +44,7 @@ svg text{fill:var(--mu);font-size:11px}
 <div class="row"><div class="card"><h2>Curva de capital (€)</h2><svg id="chart" viewBox="0 0 1000 240" width="100%" preserveAspectRatio="none" style="height:240px"></svg></div>
 <div class="card"><h2>Motivos de descarte</h2><div id="rejstats"></div></div></div>
 <div class="card sec"><h2>Posiciones abiertas</h2><div class="tw" id="open"></div></div>
-<div class="card sec"><h2>Comité · candidatos y votos</h2><div class="tw" id="cands"></div></div>
+<div class="card sec"><h2>Comité · candidatos y votos <span style="font-weight:400;font-size:12px" class="mu">· <span class="src ai">🤖 IA</span> comité Grok Bot · <span class="src sc">⚙️ Script</span> reglas fijas (respaldo)</span></h2><div class="tw" id="cands"></div></div>
 <div class="card sec"><h2>Historial de operaciones</h2><div class="tw" id="closed"></div></div>
 <div class="card sec"><h2>Últimos descartes del filtro</h2><div class="tw" id="rejs"></div></div>
 <div class="mu" style="font-size:12px;text-align:center;padding:10px" id="upd"></div>
@@ -57,6 +58,7 @@ const t=s=>s?new Date(s*1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:
 const sg=n=>n>0?'+':'';const pc=n=>n>0?'pg':n<0?'pr':'pn';
 const pnlb=(txt,n)=>`<span class="pill ${pc(n)}">${txt}</span>`;
 const ds=(tok,s)=>`<a href="https://dexscreener.com/solana/${esc(tok)}" target="_blank" rel="noopener"><b>${esc(s)}</b></a>`;
+const srcB=c=>{const v=c.votes||[];if(!v.length)return'<span class="mu">—</span>';const a=v.filter(x=>x.source!='heuristic').length,h=v.length-a;return a&&h?`<span class="src mx" title="IA ${a} · Script ${h}">IA ${a} · Script ${h}</span>`:a?`<span class="src ai">IA ${a}/${v.length}</span>`:`<span class="src sc">Script ${h}/${v.length}</span>`};
 const st={pending:['⏳ votando','pa'],approved:['✅ aprobado','pg'],rejected:['❌ rechazado','pr'],expired:['⌛ caducado','pn'],approved_skipped:['⚠️ sin hueco','pn']};
 function tbl(h,rows){return rows.length?`<table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<div class="empty">Nada todavía.</div>'}
 const SRC=['https://api.github.com/repos/Borja123431/memehunter-dashboard/contents/data.enc.json?ref=data','https://raw.githubusercontent.com/Borja123431/memehunter-dashboard/data/data.enc.json'];
@@ -89,8 +91,8 @@ async function load(){
  chart(d);
  $('open').innerHTML=tbl(['Token','Apertura','Entrada $','Actual $','Stop $','Próx. TP $','Invertido','Restante','P&L','Tramos'],d.open.map(p=>[ds(p.token,p.symbol),t(p.opened),px(p.entry_px),px(p.last_px),px(p.stop_px),px(p.tp_next),f(p.cost_sol*e)+' €',f(p.qty_left/p.qty*100,0)+'%',pnlb(sg(p.pnl_pct)+f(p.pnl_pct,1)+'%',p.pnl_pct),(p.tp1_done?'<span class="pill pg">TP1</span> ':'')+(p.tp2_done?'<span class="pill pg">TP2</span>':'')||'<span class="mu">—</span>']));
  $('closed').innerHTML=tbl(['Token','Apertura','Cierre','Duración','Entrada $','Invertido','Recuperado','P&L','Motivo'],d.closed.map(p=>[ds(p.token,p.symbol),t(p.opened),t(p.closed),f((p.closed-p.opened)/60,1)+' min',px(p.entry_px),f(p.cost_sol*e)+' €',f(p.proceeds_sol*e)+' €',pnlb(`${sg(p.pnl_sol)}${f(p.pnl_sol*e)} € · ${sg(p.pnl_pct)}${f(p.pnl_pct,1)}%`,p.pnl_sol),`<span class="mu">${esc(p.exit_reason)}</span>`]));
- $('cands').innerHTML=tbl(['Hora','Token','MCap','Liquidez','Estado','Jueces'],d.candidates.map(c=>{const x=st[c.status]||[c.status,'pn'];return[t(c.ts),ds(c.token,c.symbol),'$'+f(c.mcap,0),'$'+f(c.liq,0),`<span class="pill ${x[1]}">${x[0]}${c.status!='pending'?` ${c.yes}/${c.yes+c.no}`:''}</span>`,
-  (c.votes||[]).map(v=>`<span class="chip ${v.vote=='yes'?'y':'n'}" title="${esc(v.judge)} (${esc(v.source)}): ${esc(v.reason)}">${esc(v.judge)} <b>${v.vote=='yes'?'SÍ':'NO'}</b></span>`).join('')||'<span class="mu">esperando votos…</span>']}));
+ $('cands').innerHTML=tbl(['Hora','Token','MCap','Liquidez','Estado','Origen','Jueces'],d.candidates.map(c=>{const x=st[c.status]||[c.status,'pn'];return[t(c.ts),ds(c.token,c.symbol),'$'+f(c.mcap,0),'$'+f(c.liq,0),`<span class="pill ${x[1]}">${x[0]}${c.status!='pending'?` ${c.yes}/${c.yes+c.no}`:''}</span>`,srcB(c),
+  (c.votes||[]).map(v=>`<span class="chip ${v.vote=='yes'?'y':'n'}" title="${esc(v.judge)} (${v.source=='heuristic'?'Script':'IA'}): ${esc(v.reason)}"><span class="src ${v.source=='heuristic'?'sc':'ai'}">${v.source=='heuristic'?'⚙️':'🤖'}</span>${esc(v.judge)} <b>${v.vote=='yes'?'SÍ':'NO'}</b></span>`).join('')||'<span class="mu">esperando votos…</span>']}));
  const mxr=Math.max(1,...d.rej_stats.map(r=>r.n));
  $('rejstats').innerHTML=d.rej_stats.length?d.rej_stats.map(r=>`<div class="bar"><span title="${esc(r.r)}">${esc(r.r)}</span><i style="width:${Math.max(4,r.n/mxr*100*0.6)}%"></i><b>${r.n}</b></div>`).join(''):'<div class="empty">Nada todavía.</div>';
  $('rejs').innerHTML=tbl(['Hora','Token','MCap','Motivo'],d.rejections.slice(0,50).map(r=>[t(r.ts),ds(r.token,r.symbol||'?'),'$'+f(r.mcap,0),`<span class="mu">${esc(r.reason)}</span>`]));
