@@ -33,7 +33,7 @@ svg text{fill:var(--mu);font-size:11px}
 .lc .go{width:100%;padding:12px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--a),#5b8cff);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
 .lc label{display:flex;gap:8px;justify-content:center;color:var(--mu);font-size:12px;margin:12px 0 0}.err{color:var(--r);min-height:18px;margin-top:10px;font-size:13px}
 @media(max-width:600px){.wrap{padding:12px}.k .v{font-size:20px}.bar span{width:100px}}
-</style></head><body>
+.pgr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:flex-end;padding:10px 4px 2px;font-size:12px;color:var(--mu)}.pgr .pgi{margin-right:auto}.pgr button,.pgr select{background:var(--card2);color:inherit;border:1px solid var(--bd);border-radius:7px;padding:3px 9px;font-size:12px;cursor:pointer;min-width:28px}.pgr button.on{border-color:var(--a);color:#fff;font-weight:700}.pgr button:disabled{opacity:.35;cursor:default}.pgr .pgb{display:flex;gap:4px;align-items:center}</style></head><body>
 <div id="login"><div class="card lc"><div class="logo">M</div><h1>MemeHunter</h1><div class="mu" style="margin-top:4px">Panel privado · datos cifrados</div>
 <input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password"><button class="go" id="go">Entrar</button>
 <label><input type="checkbox" id="rem" checked> Recordar en este navegador</label><div class="err" id="err"></div></div></div>
@@ -50,6 +50,14 @@ svg text{fill:var(--mu);font-size:11px}
 <div class="mu" style="font-size:12px;text-align:center;padding:10px" id="upd"></div>
 </div></div>
 <script>
+const PG={},TB={};
+function pgNums(p,n){const a=[];for(let i=1;i<=n;i++){if(i==1||i==n||Math.abs(i-p)<=1)a.push(i);else if(a[a.length-1]!='…')a.push('…')}return a}
+function tbl(h,rows,id){const empty=!rows.length;if(!id||empty)return tbl0(h,rows);TB[id]=[h,rows];const g=PG[id]||(PG[id]={p:1,s:20});const N=rows.length,n=Math.max(1,Math.ceil(N/g.s));if(g.p>n)g.p=n;const a=(g.p-1)*g.s;
+ const nav=`<div class="pgr"><span class="pgi">${a+1}–${Math.min(N,a+g.s)} de ${N}</span><span class="pgb"><button ${g.p<=1?'disabled':''} onclick="pgGo('${id}',${g.p-1})">‹</button>${pgNums(g.p,n).map(i=>i=='…'?'<span class="pge">…</span>':`<button class="${i==g.p?'on':''}" onclick="pgGo('${id}',${i})">${i}</button>`).join('')}<button ${g.p>=n?'disabled':''} onclick="pgGo('${id}',${g.p+1})">›</button></span><select onchange="pgSize('${id}',this.value)">${[10,20,50].map(s=>`<option ${s==g.s?'selected':''}>${s}</option>`).join('')}</select></div>`;
+ return tbl0(h,rows.slice(a,a+g.s))+(N>10?nav:'')}
+function pgGo(id,p){PG[id].p=p;const [h,r]=TB[id];document.getElementById(id).innerHTML=tbl(h,r,id)}
+function pgSize(id,s){PG[id].s=+s;PG[id].p=1;pgGo(id,1)}
+function pgReset(id){if(PG[id])PG[id].p=1}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const f=(n,d=2)=>(n==null||isNaN(n))?'—':Number(n).toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -60,7 +68,7 @@ const pnlb=(txt,n)=>`<span class="pill ${pc(n)}">${txt}</span>`;
 const ds=(tok,s)=>`<a href="https://dexscreener.com/solana/${esc(tok)}" target="_blank" rel="noopener"><b>${esc(s)}</b></a>`;
 const srcB=c=>{const v=c.votes||[];if(!v.length)return'<span class="mu">—</span>';const a=v.filter(x=>x.source!='heuristic').length,h=v.length-a;return a&&h?`<span class="src mx" title="IA ${a} · Script ${h}">IA ${a} · Script ${h}</span>`:a?`<span class="src ai">IA ${a}/${v.length}</span>`:`<span class="src sc">Script ${h}/${v.length}</span>`};
 const st={pending:['⏳ votando','pa'],approved:['✅ aprobado','pg'],rejected:['❌ rechazado','pr'],expired:['⌛ caducado','pn'],approved_skipped:['⚠️ sin hueco','pn']};
-function tbl(h,rows){return rows.length?`<table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<div class="empty">Nada todavía.</div>'}
+function tbl0(h,rows){return rows.length?`<table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<div class="empty">Nada todavía.</div>'}
 const SRC=['https://api.github.com/repos/Borja123431/memehunter-dashboard/contents/data.enc.json?ref=data','https://raw.githubusercontent.com/Borja123431/memehunter-dashboard/data/data.enc.json'];
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));let PW=localStorage.getItem('mh_pw')||'',KC={},lastTs=0;
 async function getEnc(){for(const [i,u] of SRC.entries()){try{const r=await fetch(u+(u.includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store',headers:i==0?{Accept:'application/vnd.github.raw'}:{}});if(r.ok)return await r.json()}catch(e){}}throw new Error('sin datos')}
@@ -89,13 +97,13 @@ async function load(){
   ['Candidatos 24h',s.cand_24h,`${s.watching} pools vigilados`]]
  .map(k=>`<div class="card k"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
  chart(d);
- $('open').innerHTML=tbl(['Token','Apertura','Entrada $','Actual $','Stop $','Próx. TP $','Invertido','Restante','P&L','Tramos'],d.open.map(p=>[ds(p.token,p.symbol),t(p.opened),px(p.entry_px),px(p.last_px),px(p.stop_px),px(p.tp_next),f(p.cost_sol*e)+' €',f(p.qty_left/p.qty*100,0)+'%',pnlb(sg(p.pnl_pct)+f(p.pnl_pct,1)+'%',p.pnl_pct),(p.tp1_done?'<span class="pill pg">TP1</span> ':'')+(p.tp2_done?'<span class="pill pg">TP2</span>':'')||'<span class="mu">—</span>']));
- $('closed').innerHTML=tbl(['Token','Apertura','Cierre','Duración','Entrada $','Invertido','Recuperado','P&L','Motivo'],d.closed.map(p=>[ds(p.token,p.symbol),t(p.opened),t(p.closed),f((p.closed-p.opened)/60,1)+' min',px(p.entry_px),f(p.cost_sol*e)+' €',f(p.proceeds_sol*e)+' €',pnlb(`${sg(p.pnl_sol)}${f(p.pnl_sol*e)} € · ${sg(p.pnl_pct)}${f(p.pnl_pct,1)}%`,p.pnl_sol),`<span class="mu">${esc(p.exit_reason)}</span>`]));
+ $('open').innerHTML=tbl(['Token','Apertura','Entrada $','Actual $','Stop $','Próx. TP $','Invertido','Restante','P&L','Tramos'],d.open.map(p=>[ds(p.token,p.symbol),t(p.opened),px(p.entry_px),px(p.last_px),px(p.stop_px),px(p.tp_next),f(p.cost_sol*e)+' €',f(p.qty_left/p.qty*100,0)+'%',pnlb(sg(p.pnl_pct)+f(p.pnl_pct,1)+'%',p.pnl_pct),(p.tp1_done?'<span class="pill pg">TP1</span> ':'')+(p.tp2_done?'<span class="pill pg">TP2</span>':'')||'<span class="mu">—</span>']),'open');
+ $('closed').innerHTML=tbl(['Token','Apertura','Cierre','Duración','Entrada $','Invertido','Recuperado','P&L','Motivo'],d.closed.map(p=>[ds(p.token,p.symbol),t(p.opened),t(p.closed),f((p.closed-p.opened)/60,1)+' min',px(p.entry_px),f(p.cost_sol*e)+' €',f(p.proceeds_sol*e)+' €',pnlb(`${sg(p.pnl_sol)}${f(p.pnl_sol*e)} € · ${sg(p.pnl_pct)}${f(p.pnl_pct,1)}%`,p.pnl_sol),`<span class="mu">${esc(p.exit_reason)}</span>`]),'closed');
  $('cands').innerHTML=tbl(['Hora','Token','MCap','Liquidez','Estado','Origen','Jueces'],d.candidates.map(c=>{const x=st[c.status]||[c.status,'pn'];return[t(c.ts),ds(c.token,c.symbol),'$'+f(c.mcap,0),'$'+f(c.liq,0),`<span class="pill ${x[1]}">${x[0]}${c.status!='pending'?` ${c.yes}/${c.yes+c.no}`:''}</span>`,srcB(c),
-  (c.votes||[]).map(v=>`<span class="chip ${v.vote=='yes'?'y':'n'}" title="${esc(v.judge)} (${v.source=='heuristic'?'Script':'IA'}): ${esc(v.reason)}"><span class="src ${v.source=='heuristic'?'sc':'ai'}">${v.source=='heuristic'?'⚙️':'🤖'}</span>${esc(v.judge)} <b>${v.vote=='yes'?'SÍ':'NO'}</b></span>`).join('')||'<span class="mu">esperando votos…</span>']}));
+  (c.votes||[]).map(v=>`<span class="chip ${v.vote=='yes'?'y':'n'}" title="${esc(v.judge)} (${v.source=='heuristic'?'Script':'IA'}): ${esc(v.reason)}"><span class="src ${v.source=='heuristic'?'sc':'ai'}">${v.source=='heuristic'?'⚙️':'🤖'}</span>${esc(v.judge)} <b>${v.vote=='yes'?'SÍ':'NO'}</b></span>`).join('')||'<span class="mu">esperando votos…</span>']}),'cands');
  const mxr=Math.max(1,...d.rej_stats.map(r=>r.n));
  $('rejstats').innerHTML=d.rej_stats.length?d.rej_stats.map(r=>`<div class="bar"><span title="${esc(r.r)}">${esc(r.r)}</span><i style="width:${Math.max(4,r.n/mxr*100*0.6)}%"></i><b>${r.n}</b></div>`).join(''):'<div class="empty">Nada todavía.</div>';
- $('rejs').innerHTML=tbl(['Hora','Token','MCap','Motivo'],d.rejections.slice(0,50).map(r=>[t(r.ts),ds(r.token,r.symbol||'?'),'$'+f(r.mcap,0),`<span class="mu">${esc(r.reason)}</span>`]));
+ $('rejs').innerHTML=tbl(['Hora','Token','MCap','Motivo'],d.rejections.map(r=>[t(r.ts),ds(r.token,r.symbol||'?'),'$'+f(r.mcap,0),`<span class="mu">${esc(r.reason)}</span>`]),'rejs');
  $('upd').textContent='Comprobado a las '+new Date().toLocaleTimeString('es-ES')+' · se refresca cada 75 s · retraso típico 1–2 min';age();
 }
 let timer;async function start(){try{await load();$('login').style.display='none';$('app').style.display='block';if($('rem').checked)localStorage.setItem('mh_pw',PW);if(!timer){timer=setInterval(()=>load().catch(e=>$('upd').textContent='Error al refrescar: '+e.message),75000);setInterval(age,5000)}}catch(e){$('err').textContent=e.name=='OperationError'?'Contraseña incorrecta':'Error: '+e.message;localStorage.removeItem('mh_pw')}}
