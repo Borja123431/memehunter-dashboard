@@ -88,7 +88,7 @@ function age(){if(!lastTs)return;const a=Date.now()/1000-lastTs,m=a/60;$('age').
 async function load(){
  const d=await decrypt(await getEnc(),PW);lastTs=d.now;const e=d.sol_eur,s=d.stats;
  const eqE=d.equity_sol*e,pnl=eqE-d.start_eur,pp=pnl/d.start_eur*100,wr=s.trades?s.wins/s.trades*100:null;
- $('run').innerHTML=d.halted?'<span class="badge" style="background:rgba(239,68,68,.12);color:var(--r)">PAUSADO</span>':'<span class="badge" style="background:rgba(34,197,94,.12);color:var(--g)">ACTIVO</span>';
+ $('run').innerHTML=(d.version?'<span class="badge" style="margin-right:6px">v'+d.version+'</span>':'')+(d.halted?'<span class="badge" style="background:rgba(239,68,68,.12);color:var(--r)">PAUSADO</span>':'<span class="badge" style="background:rgba(34,197,94,.12);color:var(--g)">ACTIVO</span>');
  $('kpis').innerHTML=[['Capital',f(eqE)+' €',`${f(d.equity_sol,4)} SOL · SOL ${f(e)} €`],
   ['P&L total',`<span class="${pnl>=0?'g':'r'}">${sg(pnl)}${f(pnl)} €</span>`,`${sg(pp)}${f(pp,1)}% sobre ${f(d.start_eur,0)} €`],
   ['Tasa de acierto',wr==null?'—':f(wr,0)+'%',`${s.wins} ganadoras de ${s.trades}`],
