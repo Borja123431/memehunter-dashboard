@@ -93,12 +93,13 @@ function chart(d){const q=d.equity||[];const el=$('chart');if(q.length<2){el.inn
 function age(){if(!lastTs)return;const a=Date.now()/1000-lastTs,m=a/60;$('age').textContent='Datos de hace '+(a<90?Math.round(a)+' s':Math.round(m)+' min');$('dot').className='dot'+(m>10?' bad':m>4?' warn':'')}
 async function load(){
  const d=await decrypt(await getEnc(),PW);lastTs=d.now;const e=d.sol_eur,s=d.stats;
- const eqE=d.equity_sol*e,pnl=eqE-d.start_eur,pp=pnl/d.start_eur*100,wr=s.trades?s.wins/s.trades*100:null;
+ const R=d.stats_reset||s,rd=d.reset_ts?new Date(d.reset_ts*1000).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):null;
+ const eqE=d.equity_sol*e,pnl=eqE-d.start_eur,pp=pnl/d.start_eur*100,wr=R.trades?R.wins/R.trades*100:null;
  $('run').innerHTML=(d.version?'<span class="badge" style="margin-right:6px">v'+d.version+'</span>':'')+(d.halted?'<span class="badge" style="background:rgba(239,68,68,.12);color:var(--r)">PAUSADO</span>':'<span class="badge" style="background:rgba(34,197,94,.12);color:var(--g)">ACTIVO</span>');
  $('kpis').innerHTML=[['Capital',f(eqE)+' €',`${f(d.equity_sol,4)} SOL · SOL ${f(e)} €`],
-  ['P&L total',`<span class="${pnl>=0?'g':'r'}">${sg(pnl)}${f(pnl)} €</span>`,`${sg(pp)}${f(pp,1)}% sobre ${f(d.start_eur,0)} €`],
-  ['Tasa de acierto',wr==null?'—':f(wr,0)+'%',`${s.wins} ganadoras de ${s.trades}`],
-  ['Operaciones',s.trades,`P&L ops ${sg(s.pnl_sol)}${f(s.pnl_sol*e)} € · comis. ${f(s.fees_sol*e)} €`],
+  ['P&L total',`<span class="${pnl>=0?'g':'r'}">${sg(pnl)}${f(pnl)} €</span>`,`${sg(pp)}${f(pp,1)}% sobre ${f(d.start_eur,0)} €${rd?' · desde el reinicio '+rd:''}`],
+  ['Tasa de acierto',wr==null?'—':f(wr,0)+'%',`${R.wins} ganadoras de ${R.trades}${d.stats_reset?' desde el reinicio':''}`],
+  ['Operaciones',R.trades,`P&L ops ${sg(R.pnl_sol)}${f(R.pnl_sol*e)} € · comis. ${f(R.fees_sol*e)} €${d.stats_reset?' · histórico '+s.trades:''}`],
   ['Posiciones abiertas',`${d.open.length}<span class="mu" style="font-size:15px"> / ${d.cfg?.max_open??'—'}</span>`,`Efectivo ${f(d.cash_sol*e)} €`],
   ['Candidatos 24h',s.cand_24h,`${s.watching} pools vigilados`]]
  .map(k=>`<div class="card k"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
